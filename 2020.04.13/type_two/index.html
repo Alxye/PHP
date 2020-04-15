@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="jquery-1.11.2.min.js"></script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        .xq{
+            margin-left: 5px;
+        }
+        #fenye li:hover{
+            cursor:pointer ;
+        }
+    </style>
+</head>
+<body>
+<h1>显示数据</h1>
+<div>
+    <input type="text" id="name"/>
+    <input type="button" id="chaxun" value="查询"/>
+</div>
+<br/>
+<table class="table table-striped">
+
+    <thead>
+    <tr>
+        <td>代号</td>
+        <td>名称</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody id="td">
+
+    </tbody>
+
+</table>
+<br/>
+<div><ul class="pagination" id="fenye">
+    <!--        <li><a href="#">&laquo;</a></li>-->
+    <!--        <li><a href="#">&raquo;</a></li>-->
+</ul></div>
+
+
+<!--模态框-->
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">详情</h4>
+            </div>
+            <div class="modal-body" id="nr">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+</body>
+
+</html>
+<script>
+
+    var page = 1;
+    //当前页，默认等于1
+
+    //调用load方法
+    load();
+    //把加载数据封装成一个方法
+    loadfenye();
+    //加载分页信息方法
+
+    //给查询加点击事件
+    $("#chaxun").click(function(){
+
+        //重新加载
+        //调用load方法
+        load();
+        //把加载数据封装成一个方法
+        loadfenye();
+        //加载分页信息方法
+    })
+
+    function loadfenye()
+    {
+        var s = "";
+        //用于接收
+        var name = $("#name").val();
+        var xiao = 1;
+//        最大页
+        var da = 1;
+//        最小页
+        $.ajax({
+            async:false,
+//            做成同步
+            url:"zys.php",
+            data:{name:name},
+            type:"POST",
+            dataType:"TEXT",
+            success:function(data){
+                da = data;
+                //最大页数
+            }
+        });
+//加载上一页
+        s += "<li class='sy'><a>&laquo;</a></li>";
+
+//        加载分页列表
+        for(var i=page-4;i<page+5;i++)
+        {
+            //i代表列表的页数
+            if(i>=xiao && i<=da) {
+                if (i == page) {
+                    s += " <li class='active list'><a>" + i + "</a></li>"
+                }
+                else {
+                    s += " <li class='list'><a>" + i + "</a></li>";
+                }
+            }
+        }
+        //        加载下一页
+        s += "<li class='xy'><a>&raquo;</a></li>";
+
+        $("#fenye").html(s);
+//给列表加上点击事件
+        $(".list").click(function(){
+            //改变当前页数
+            //把点击的页数，扔给page（当前页）
+            page = $(this).text();
+//            page获取了当前页，重新加载以下方法
+            //调用load方法
+            load();
+            //把加载数据封装成一个方法
+            loadfenye();
+            //加载分页信息方法
+        })
+        //上一页点击事件
+        $(".sy").click(function(){
+            //改变当前页
+            if(page>1)
+            {
+                //如果不是第一页
+                page = parseInt(page) - 1;
+            }
+            //            page获取了当前页，重新加载以下方法
+            //调用load方法
+            load();
+            //把加载数据封装成一个方法
+            loadfenye();
+            //加载分页信息方法
+        })
+        //下一页点击事件
+        $(".xy").click(function(){
+//            alert(da);
+            if(page<da)
+            {
+                //如果不是第一页
+                page = parseInt(page) + 1;
+            }
+            //            page获取了当前页，重新加载以下方法
+            //调用load方法
+            load();
+            //把加载数据封装成一个方法
+            loadfenye();
+            //加载分页信息方法
+        })
+    }
+
+    function load()
+    {
+        var name = $("#name").val();
+        $.ajax({
+            url: "jiazai.php",
+//        显示所有的数据不用写data
+            data:{page:page,name:name},
+            type:"POST",
+            dataType: "TEXT",
+            success: function (data) {
+                var str = "";
+                var hang = data.split("|");
+                //split拆分字符串
+                for (var i = 0; i < hang.length; i++) {
+                    //通过循环取到每一行;拆分出列；
+                    var lie = hang[i].split("-");
+                    str = str +
+                        "<tr><td>"
+                        + lie[0] +
+                        "</td><td>"
+                        + lie[1] +
+                        "</td><td>" +
+                        "<button type='button' class='btn btn-info sc' ids='"+lie[0]+"'>点击删除</button><button type='button' class='btn btn-primary xq' ids='"+lie[0]+"'>查看详情</button>" +
+
+                        //ids里面存上主键值
+                        "</td></tr>";
+                }
+                $("#td").html(str);
+                //找到td把html代码扔进去
+                addshanchu();
+                addxiangqing();
+
+            }
+        });
+    }
+    //给查看详情加事件
+    function addxiangqing()
+    {
+        $(".xq").click(function(){
+            $('#myModal').modal('show')
+            //打开模态框
+            var ids = $(this).attr("ids");
+            $.ajax({
+                url:"xiangqing.php",
+                data:{ids:ids},
+                dataType:"TEXT",
+                type:"POST",
+                success:function(data){
+                    //拆分
+                    var lie = data.split("^");
+//                       var str = "<div>代号:"+lie[0]+"</div><div>名称:"+lie[1]"</div>";
+                    //造字符串
+                    var str = "<div>代号："+lie[0]+"</div><div>名称："+lie[1]+"</div>";
+                    $("#nr").html(str);
+                }
+            });
+
+            //在模态框里面要显示的内容
+        })
+    }
+    //把删除事件封装成方法：
+    function addshanchu()
+    {
+        //给删除按钮加上事件
+        $(".sc").click(function () {
+            var ids = $(this).attr("ids");
+            $.ajax({
+                url: "shanchu.php",
+                data: {ids: ids},
+                dataType: "TEXT",
+                type: "POST",
+                success: function (d) {
+                    if (d.trim() == "ok") {
+                        alert("删除成功");
+                        //调用加载数据的方法
+                        load();
+                    }
+                    else {
+                        alert("删除失败");
+                    }
+                }
+            });
+        })
+    }
+</script>
