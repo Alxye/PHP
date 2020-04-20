@@ -7,7 +7,7 @@
  * 4.处理结果
  * 5.关闭
  */
-require_once './DB.php';
+require_once 'DB.php';
 class App{
     private $db;
     public function __construct()
@@ -30,11 +30,9 @@ class App{
             $pageSize=isset($_GET['page_size']) ? $_GET['page_size'] : 10;
 
             $pageIndex=$_GET['page_index'];
-            echo "test =>".$pageIndex."<br>";
+
             $data=$this->pagination(intval($pageSize),intval($pageIndex));
 
-            //var_dump($data);
-            
             $count=intval($this->getCount());
             $totalPage=ceil($count/$pageSize);
             $info=[
@@ -45,7 +43,6 @@ class App{
             return $this->returnSuccessData($info);
 
         }catch (Exception $e){
-            //var_dump($e->getMessage());
             return $this->returnData($e->getCode(),$e->getMessage());
         }
     }
@@ -67,7 +64,8 @@ class App{
         echo $offset."<br>";
         echo $pageSize."<br>";
         echo $pageIndex."<br>";
-        $sql='select id,title,type,date from tb_user WHERE type=1 order by date limit ? offset ? ';
+        //$sql='select id,title,type,date from tb_user WHERE type=1 order by date limit '.$limit.' offset'. $offset;
+        $sql='select id,title,type,date from tb_user WHERE type=1 order by date limit ? offset ?';
         $data=$this->db->query($sql,[
             [$limit,PDO::PARAM_INT],
             [$offset,PDO::PARAM_INT]
@@ -118,5 +116,7 @@ class App{
     }
 }
 $app=new App();
+$re=$app->run();
+echo $re;
 $re=$app->run();
 echo $re;

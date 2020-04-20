@@ -79,7 +79,7 @@ function getData() {
         type:'GET',
         data:{
             page_size:pageSize,
-            page_index:currentPage
+            page_index:currentPage,
         } ,
         dataType:'json'
     }).done(function (data) {
