@@ -52,7 +52,7 @@
             ?>
             <tr align="center">
                 <td><?php echo $array['id'];?></td>
-                <td><?php echo $array['username'];?></td>
+                <td><?php echo $array['title'];?></td>
             </tr>
             <?php
         }
